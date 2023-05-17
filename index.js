@@ -194,7 +194,7 @@ app.get("/recipes/", async (request, response) => {
             return (a.numMissing - b.numMissing);
         })
 
-        return response.json(sortedHits);
+        return response.json({recipes: sortedHits});
     } catch (error) {
         console.log(error);
         return response.status(500).json({ error: error.message });
@@ -228,7 +228,7 @@ app.get("/recipes/:recipeId", async (request, response) => {
         result.numIngredients = numIngredients;
         result.matchedIngredients = matchedIngredients;
 
-        return response.json(result);
+        return response.json({recipe: result});
     } catch (error) {
         console.log(error);
         return response.status(500).json({ error: error.message });
@@ -262,7 +262,7 @@ app.get("/ingredients", async (request, response) => {
         return response.status(500).json({ error: "Error searching for ingredients" });
     }
 
-    return response.json(results.hits);
+    return response.json({ingredients: results.hits});
 })
 
 app.get("/speech-parser", async (request, response) => {

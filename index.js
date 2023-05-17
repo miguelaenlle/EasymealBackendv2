@@ -191,7 +191,7 @@ app.get("/recipes/", async (request, response) => {
             minProximity: 1,
             attributesToRetrieve: ["ingredients", "title", "img", "objectID"],
             page: page,
-            hitsPerPage: 100,
+            hitsPerPage: 1000,
         })
 
         let hits = results.hits;
@@ -199,6 +199,7 @@ app.get("/recipes/", async (request, response) => {
         for (let i = 0; i < hits.length; i++) {
             const result = hits[i];
             const highlightedResults = result._highlightResult._tags;
+            console.log(highlightedResults);
             let numIngredientsMatched = 0;
             let numIngredients = 0;
             for (const result of highlightedResults) {
@@ -209,10 +210,13 @@ app.get("/recipes/", async (request, response) => {
             }
             hits[i].numIngredientsMatched = numIngredientsMatched;
             hits[i].numIngredients = numIngredients;
+            hits[i].numMissing = numIngredients - numIngredientsMatched;
         }
-        console.log("results", hits.length);
+        const sortedHits = hits.sort((a, b) => {
+            return (a.numMissing - b.numMissing);
+        })
 
-        return response.json(hits);
+        return response.json(sortedHits);
     } catch (error) {
         console.log(error);
         return response.status(500).json({ error: error.message });

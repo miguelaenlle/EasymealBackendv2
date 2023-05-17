@@ -16,31 +16,9 @@ app.use(express.json())
 
 const client = algoliasearch("BNUFEQQJJG", "2b51428570ed2e2651eb359fe186c64d");
 const index = client.initIndex("easymeal");
+const ingredientsIndex = client.initIndex("ingredients");
 
 const INGREDIENTS = [
-    'Additive',
-    'Bakery',
-    'Beverage',
-    'Beverage-Alcoholic',
-    'Cereal',
-    'Condiment',
-    'Dairy',
-    'Dish',
-    'Essential Oil',
-    'Fish',
-    'Flower',
-    'Fruit',
-    'Fungi',
-    'Herb',
-    'Legume',
-    'Maize',
-    'Meat',
-    'Nuts and Seeds',
-    'Plant',
-    'Plant Derivative',
-    'Seafood',
-    'Spice',
-    'Vegetable',
     'Salt',
     'Sugar',
     'Baking Powder',
@@ -263,7 +241,31 @@ function fuzzyMatch(pattern, str) {
     return re.test(str);
   }
 
+
 app.get("/ingredients", async (request, response) => {
+    const query = request.query.query;
+    const page = request.query.page || 0;
+
+    if (!query) {
+        return response.status(400).json({ error: "Missing query parameter" });
+    }
+    
+    let results;
+    try {
+        results = await ingredientsIndex.search(query, {
+            minProximity: 1,
+            page: page,
+            hitsPerPage: 1000,
+        })
+    } catch (error) {
+        console.error(error);
+        return response.status(500).json({ error: "Error searching for ingredients" });
+    }
+
+    return response.json(results.hits);
+})
+
+app.get("/speech-parser", async (request, response) => {
     const query = request.query.query;
     if (!query) {
         return response.status(400).json({ error: "Missing query parameter" });

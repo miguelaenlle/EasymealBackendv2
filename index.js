@@ -7,6 +7,7 @@ const {
 } = require("./levenshtein-search");
 
 const app = express();
+const port = process.env.PORT || 3200;
 
 app.use(bodyParser.json());
 app.use(cors());
@@ -287,7 +288,7 @@ app.get("/ingredients", async (request, response) => {
 })
 
 
-app.listen(5000, () => {
+app.listen(port, () => {
     console.log("Server is listening on port 5000");
 }
 )

@@ -158,6 +158,18 @@ app.get("/recipes/", async (request, response) => {
         const page = request.query.page;
         let searchTerms = "";
         if (tags) {
+            const tagsList = tags.split(",");
+            for (let i = 0; i < tagsList.length; i++) {
+                const tag = tagsList[i];
+                const searchTermsLength = searchTerms.length;
+                const tagLength = tag.length;
+                if (searchTermsLength + tagLength + 1> 512) {
+                    break;
+                }
+                
+                searchTerms += tag + " ";
+            }
+
             searchTerms = tags.split(",").join("  ");
         }
         console.log(searchTerms);
@@ -167,9 +179,9 @@ app.get("/recipes/", async (request, response) => {
             similarQuery: searchTerms,
             advancedSyntax: true,
             minProximity: 1,
-            attributesToRetrieve: ["ingredients", "title", "img", "objectID"],
+            attributesToRetrieve: ["ingredients", "title", "img", "objectID", "energy"],
             page: page,
-            hitsPerPage: 1000,
+            hitsPerPage: 100,
         })
 
         let hits = results.hits;

@@ -179,7 +179,7 @@ app.get("/recipes/", async (request, response) => {
             similarQuery: searchTerms,
             advancedSyntax: true,
             minProximity: 1,
-            attributesToRetrieve: ["ingredients", "title", "img", "objectID", "healthScore"],
+            attributesToRetrieve: ["ingredients", "title", "img", "objectID", "healthScore", "url", "calories"],
             page: page,
             hitsPerPage: 100,
         })

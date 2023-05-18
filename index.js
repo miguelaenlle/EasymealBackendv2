@@ -192,19 +192,29 @@ app.get("/recipes/", async (request, response) => {
             const result = hits[i];
             const highlightedResults = result._highlightResult._tags;
             console.log(highlightedResults);
+            let ingredients = []
             let numIngredientsMatched = 0;
             let numIngredients = 0;
             for (const result of highlightedResults) {
                 if (result.matchedWords.length>0) {
                     numIngredientsMatched++;
                     matchedWords.push(result.value.replace("<em>", "").replace("</em>", ""));
+                    ingredients.push({
+                        name: result.value.replace("<em>", "").replace("</em>", ""),
+                        available: true,
+                    })
+                } else {
+                    ingredients.push({
+                        name: result.value,
+                        available: false,
+                    })
                 }
                 numIngredients++;
             }
             hits[i].numIngredientsMatched = numIngredientsMatched;
             hits[i].numIngredients = numIngredients;
             hits[i].numMissing = numIngredients - numIngredientsMatched;
-            hits[i].matchedWords = matchedWords;
+            hits[i].ingredients = ingredients;
         }
         const sortedHits = hits.sort((a, b) => {
             return (a.numMissing - b.numMissing);

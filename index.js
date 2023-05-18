@@ -205,7 +205,7 @@ app.get("/recipes/", async (request, response) => {
                     })
                 } else {
                     ingredients.push({
-                        name: result.value,
+                        name: result.value.replace("<em>", "").replace("</em>", ""),
                         available: false,
                     })
                 }

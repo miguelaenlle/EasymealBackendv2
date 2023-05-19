@@ -207,7 +207,7 @@ app.get("/recipes/", async (request, response) => {
                 const tag = tagsList[i];
                 const searchTermsLength = searchTerms.length;
                 const tagLength = tag.length;
-                if (searchTermsLength + tagLength + 1> 512) {
+                if (searchTermsLength + tagLength + 1> 500) {
                     break;
                 }
                 

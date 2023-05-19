@@ -156,6 +156,9 @@ app.get("/recipes/", async (request, response) => {
     try {
         const tags = request.query.ingredients;
         const page = request.query.page;
+        const minCalories = request.query.minCalories;
+        const maxCalories = request.query.maxCalories;
+
         let searchTerms = "";
         if (tags) {
             const tagsList = tags.split(",");
@@ -173,12 +176,20 @@ app.get("/recipes/", async (request, response) => {
             searchTerms = tags.split(",").join("  ");
         }
         console.log(searchTerms);
-
         let results;
+        let filters = `NOT img:/recipedb/static/recipe_temp.jpg`;
+        if (minCalories && maxCalories) {
+            filters += ` AND energy >= ${minCalories} AND energy <= ${maxCalories}`;
+        } else if (minCalories) {
+            filters += ` AND energy >= ${minCalories}`;
+        } else if (maxCalories) {
+            filters += ` AND energy <= ${maxCalories}`;
+        }
         results = await index.search(searchTerms, {
             similarQuery: searchTerms,
             advancedSyntax: true,
             minProximity: 1,
+            filters: filters,
             attributesToRetrieve: ["ingredients", "title", "img", "objectID", "healthScore", "url", "energy"],
             page: page,
             hitsPerPage: 100,
